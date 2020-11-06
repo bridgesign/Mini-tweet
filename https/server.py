@@ -15,16 +15,21 @@ class server:
 	def handle(self, conn, addr):
 		# Create request
 		request = handler.httprequest(conn, addr)
-		request.handle()
+		ret = request.handle()
+
+		if ret:
+			handler.httpresponse(request, '', ret).handle()
+			conn.close()
+			return
+
 		for pattern in views.patterns:
 			if request.headers['url'] == pattern[0]:
-				response, code = pattern[1](request)
+				pattern[1](request).handle()
 				break
 		else:
 			response = "<html><body><h1>Not Found</h1></body></html>"
 			code = 404
-
-		handler.httpresponse(request, response, code).handle()
+			handler.httpresponse(request, response, code).handle()
 
 		conn.close()
 
