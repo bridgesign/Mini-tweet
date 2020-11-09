@@ -34,6 +34,7 @@ class httpcookie:
 		return '; '.join(parts)
 
 
+# TODO: Regex based splitting -  handling \r\n or \n
 class httprequest:
 	def __init__(self, conn, addr):
 		self.conn = conn
@@ -61,7 +62,7 @@ class httprequest:
 
 		for h in header:
 			t =  h.find(':')
-			self.headers[h[:t].lower()] = h[t+1:]
+			self.headers[h[:t].lower()] = h[t+1:].strip()
 
 		if 'content-length' in self.headers:
 			body += self.conn.revc(int(self.headers['content-length'])-len(body))
@@ -85,12 +86,13 @@ class httprequest:
 
 # TODO: Change header response and modify headers for better performance
 class httpresponse:
-	def __init__(self, request, response='', code=200):
+	def __init__(self, request, response='', code:int =200, content_type:str ="text/html"):
 		self.request = request
 		self.response = response
 		self.code = code
 		self.cache_control = ["private"]
 		self.cookies = []
+		self.content_type = content_type
 
 	def handle(self):
 		if self.response==None:
@@ -102,7 +104,7 @@ class httpresponse:
 		for c in self.cookies:
 			res.append('Set-Cookie: {}'.format(c.repr()))
 		if self.response:
-			res.append('Content-type: text/html')
+			res.append('Content-type: {}'.format(self.content_type))
 			res.append('Content-Length: {}\r\n'.format(len(self.response)))
 			res.append(self.response)
 		self.request.conn.send('\r\n'.join(res).encode())

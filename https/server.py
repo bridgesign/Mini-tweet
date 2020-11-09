@@ -1,15 +1,16 @@
 import socket
-import threading
+from concurrent.futures import ThreadPoolExecutor
 from . import handler
 from . import views
 
 class server:
 	"""docstring for ClassName"""
-	def __init__(self, host='', port=8080, timeout=180):
+	def __init__(self, host:str ='', port:int =8080, timeout:int =180, threads:int =10):
 		self.port = port
 		self.host = host
 		self.timeout = timeout
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.thread_pool = ThreadPoolExecutor(max_workers=threads)
 
 
 	def handle(self, conn, addr):
@@ -41,4 +42,4 @@ class server:
 		while True:
 			conn, addr = self.sock.accept()
 			conn.settimeout(self.timeout)
-			threading.Thread(target=self.handle, args=(conn, addr)).start()
+			self.thread_pool.submit(self.handle, conn, addr)
