@@ -1,9 +1,9 @@
 class User:
 	def __init__(self, username, password):
-		self.username = username
-		self.password = password
+		self.user = username
+		self.passw = password
 
 	def username(self):
-		return self.username
+		return self.user
 	def password(self):
-		return self.password
+		return self.passw
