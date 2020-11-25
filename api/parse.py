@@ -14,12 +14,16 @@ class parser:
 		obj = method(**args)
 		response = {}
 		for r in rets:
-			if not isinstance(r, dict):
+			if isinstance(r, str):
 				response[r] = getattr(obj, r)()
-			else:
+			elif isinstance(r,dict):
 				k, v = r.items()
 				tobj = getattr(obj, k)()
 				response[k] = self.resolve(tobj, v[0], v[1])
+			else:
+				k, trets = r
+				tobj_ls = getattr(obj, k)()
+				response[k] = [self.resolve(tobj, {}, trets) for tobj in tobj_ls]
 		return response
 
 	def parse(self, query):
