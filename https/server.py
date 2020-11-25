@@ -2,13 +2,16 @@ import socket
 from concurrent.futures import ThreadPoolExecutor
 from . import handler
 from . import views
+import ssl
 
 class server:
 	"""docstring for ClassName"""
-	def __init__(self, host:str ='', port:int =8080, timeout:int =180, threads:int =10):
+	def __init__(self, host:str ='', port:int =8080, timeout:int =60, threads:int =10):
 		self.port = port
 		self.host = host
 		self.timeout = timeout
+		hostname = host
+		context = ssl.create_default_context()
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.thread_pool = ThreadPoolExecutor(max_workers=threads)
 
@@ -32,7 +35,13 @@ class server:
 			code = 404
 			handler.httpresponse(request, response, code).handle()
 
-		conn.close()
+		if request.headers['connection']:
+			try:
+				self.handle(conn, addr)
+			except:
+				conn.close()
+		else:
+			conn.close()
 
 
 	def serve(self):

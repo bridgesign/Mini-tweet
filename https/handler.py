@@ -70,7 +70,7 @@ class httprequest:
 		if 'connection' in self.headers:
 			self.headers['connection'] = True if self.headers['connection']=='keep-alive' else False
 		else:
-			self.headers['connection'] = False
+			self.headers['connection'] = True
 
 		if 'cookie' in self.headers:
 			self.headers['cookie'] = [tuple(c.split('=')) for c in self.headers['cookie'].split('; ')]
