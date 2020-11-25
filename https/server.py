@@ -48,4 +48,5 @@ class server:
 		while True:
 			conn, addr = self.sock.accept()
 			conn.settimeout(self.timeout)
-			self.thread_pool.submit(self.handle, conn, addr)
+			#self.thread_pool.submit(self.handle, conn, addr)
+			self.handle(conn, addr)

@@ -27,7 +27,6 @@ class httpcookie:
 		return '; '.join(parts)
 
 
-# TODO: Regex based splitting -  handling \r\n or \n
 class httprequest:
 	def __init__(self, conn, addr):
 		self.conn = conn
@@ -58,7 +57,7 @@ class httprequest:
 			self.headers[h[:t].lower()] = h[t+1:].strip()
 
 		if 'content-length' in self.headers:
-			body += self.conn.revc(int(self.headers['content-length'])-len(body))
+			body += self.conn.recv(int(self.headers['content-length'])-len(body)).decode()
 
 		if 'connection' in self.headers:
 			self.headers['connection'] = True if self.headers['connection']=='keep-alive' else False

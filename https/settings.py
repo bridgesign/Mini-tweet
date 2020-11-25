@@ -1,6 +1,6 @@
 import os
 
-HEADER_SIZE = 8192
+HEADER_SIZE = 1024
 
 code_msg = {
 	200: 'OK',
@@ -10,6 +10,8 @@ code_msg = {
 }
 
 NOT_FOUND_TEMPLATE = "<html><body><h1>Not Found</h1></body></html>"
+
+BAD_REQUEST_TEMPLATE = "<html><body><h1>Bad Request</h1></body></html>"
 
 
 ext_to_type = {
