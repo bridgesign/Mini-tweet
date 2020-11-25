@@ -1,15 +1,8 @@
 # File for handling header
 
 from time import gmtime, strftime, time
-
-HEADER_SIZE = 8192
-
-code_msg = {
-	200: 'OK',
-	404: 'Not Found',
-	413: 'Too Long Header',
-	400: 'Bad Request',
-}
+from .settings import HEADER_SIZE, code_msg
+import re
 
 def set_time(t=None):
 	return strftime("%a, %d %b %Y %X GMT", gmtime(t))
@@ -43,12 +36,12 @@ class httprequest:
 	def handle(self):
 		data = self.conn.recv(HEADER_SIZE).decode()
 		self.headers = {'HTTP':1.0}
-		k = data.find('\r\n\r\n')
+		k = re.search('\r\n\r\n|\n\n', data)
 
-		header = data[:k]
-		body = data[k+4:]
+		header = data[:k.span()[0]]
+		body = data[k.span()[1]:]
 
-		header = header.split('\r\n')
+		header = re.split('\r\n|\n', header)
 
 		try:
 			method, url, ver = header[0].split()
@@ -98,13 +91,18 @@ class httpresponse:
 		if self.response==None:
 			return
 		res = []
-		res.append('HTTP/{} {} {}'.format(self.request.headers['HTTP'], self.code, code_msg[self.code]))
-		res.append('Date: {}'.format(set_time()))
-		res.append('Cache-Control: {}'.format(', '.join(self.cache_control)))
+		res.append('HTTP/{} {} {}'.format(self.request.headers['HTTP'], self.code, code_msg[self.code]).encode())
+		res.append('Date: {}'.format(set_time()).encode())
+		res.append('Cache-Control: {}'.format(', '.join(self.cache_control)).encode())
 		for c in self.cookies:
-			res.append('Set-Cookie: {}'.format(c.repr()))
+			res.append('Set-Cookie: {}'.format(c.repr()).encode())
+		res.append('Content-type: {}'.format(self.content_type).encode())
+		res.append('Content-Length: {}\r\n'.format(len(self.response)).encode())
 		if self.response:
-			res.append('Content-type: {}'.format(self.content_type))
-			res.append('Content-Length: {}\r\n'.format(len(self.response)))
-			res.append(self.response)
-		self.request.conn.send('\r\n'.join(res).encode())
+			if isinstance(self.response, str):
+				res.append(self.response.encode())
+			else:
+				res.append(self.response)
+		else:
+			res.append(b'')
+		self.request.conn.sendall(b'\r\n'.join(res))

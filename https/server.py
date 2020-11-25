@@ -2,7 +2,8 @@ import socket
 from concurrent.futures import ThreadPoolExecutor
 from . import handler
 from . import views
-import ssl
+import re
+from .settings import NOT_FOUND_TEMPLATE
 
 class server:
 	"""docstring for ClassName"""
@@ -10,8 +11,6 @@ class server:
 		self.port = port
 		self.host = host
 		self.timeout = timeout
-		hostname = host
-		context = ssl.create_default_context()
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.thread_pool = ThreadPoolExecutor(max_workers=threads)
 
@@ -27,13 +26,11 @@ class server:
 			return
 
 		for pattern in views.patterns:
-			if request.headers['url'] == pattern[0]:
+			if bool(re.match(pattern[0], request.headers['url'])):
 				pattern[1](request).handle()
 				break
 		else:
-			response = "<html><body><h1>Not Found</h1></body></html>"
-			code = 404
-			handler.httpresponse(request, response, code).handle()
+			handler.httpresponse(request, NOT_FOUND_TEMPLATE, 404).handle()
 
 		if request.headers['connection']:
 			try:
