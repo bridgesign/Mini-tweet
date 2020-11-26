@@ -65,7 +65,13 @@ class httprequest:
 			self.headers['connection'] = True
 
 		if 'cookie' in self.headers:
-			self.headers['cookie'] = [tuple(c.split('=')) for c in self.headers['cookie'].split('; ')]
+			cooks = self.headers['cookie'].split('; ')
+			self.headers['cookie'] = {}
+			for c in cooks:
+				k,v = c.split('=')
+				self.headers['cookie'][k] = v
+		else:
+			self.headers['cookie'] = {}
 
 		self.headers['method'] = method
 		self.headers['url'] = '/'.join(filter(lambda a: a!= '', url.replace('\\','/').split('/')))

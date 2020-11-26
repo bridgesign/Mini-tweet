@@ -14,6 +14,8 @@ NOT_FOUND_TEMPLATE = "<html><body><h1>Not Found</h1></body></html>"
 BAD_REQUEST_TEMPLATE = "<html><body><h1>Bad Request</h1></body></html>"
 
 
+secret = 'aljfhkfc234sddfb'
+
 ext_to_type = {
 	'png':'image/png',
 	'gif':'image/gif',
