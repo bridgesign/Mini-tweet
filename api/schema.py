@@ -1,4 +1,4 @@
-from .user import User
+from .objects import User
 from https import token
 
 class Error:
