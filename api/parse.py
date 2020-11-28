@@ -23,14 +23,24 @@ class parser:
 		for r in rets:
 			if isinstance(r, str):
 				response[r] = getattr(obj, r)()
+				if isinstance(response[r], schema.Error):
+					return response[r]
 			elif isinstance(r,dict):
 				k, v = r.items()
 				tobj = getattr(obj, k)()
 				response[k] = self.resolve(ctx, tobj, v[0], v[1])
+				if isinstance(response[k], schema.Error):
+					return response[k]
 			else:
 				k, trets = r
 				tobj_ls = getattr(obj, k)()
-				response[k] = [self.resolve(ctx, tobj, {}, trets) for tobj in tobj_ls]
+				resps = []
+				for tobj in tobj_ls:
+					r = self.resolve(ctx, tobj, {}, trets)
+					if isinstance(r, schema.Error):
+						return r
+					resps.append(r)
+				response[k] = resps
 		return response
 
 	def parse(self, ctx, query):
@@ -39,5 +49,9 @@ class parser:
 		args, rets = query[schem][method]
 		schem = self.schema[schem](self.obj)
 		method = getattr(schem, method)
-		response = {'data':self.resolve(ctx, method, args, rets)}
+		r = self.resolve(ctx, method, args, rets)
+		if isinstance(r, schema.Error):
+			response = r
+		else:
+			response = {'data':r}
 		return response

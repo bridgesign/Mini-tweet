@@ -29,14 +29,17 @@ def api_handler(request):
 			else:
 				ctx = {}
 			response = p.parse(ctx, json.loads(request.body))
-			return handler.httpresponse(request, json.dumps(response))
+			return handler.httpresponse(request, json.dumps(response), content_type='application/json')
 		except:
 			return handler.httpresponse(request, settings.BAD_REQUEST_TEMPLATE, 400)
 	else:
 		return handler.httpresponse(request, settings.BAD_REQUEST_TEMPLATE, 400)
 
 def index(request):
-	return handler.httpresponse(request, '<html><head><link rel="stylesheet" href="static/css/test.css"></head>index</html>')
+	path = os.path.join('templates','index.html')
+	with open(path, 'rb') as fp:
+		data = fp.read()
+	return handler.httpresponse(request, data)
 
 patterns = (
 	('^(?![\s\S])', index),
