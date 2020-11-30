@@ -52,13 +52,9 @@ Following the philosophy of GraphQL, the same endpoint can be used for all the q
 The following shows the layer structure of the current implementation:
 
 | Server      |
-|-------------|
 | Handler     |
-|-------------|
 | Views       |
-|-------------|
 | API         |
-|-------------|
 | Database    |
 
 In terms of file structure, the https package contains the server module and the api package the API module. Further documentation can be found for each package in its folder. The documentation folder contains the details of Twitter Specific implementation and the Mininet Testing.
