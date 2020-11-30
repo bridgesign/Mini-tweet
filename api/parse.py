@@ -8,6 +8,7 @@ class parser:
 		self.schema = {
 		'Query':schema.Query,
 		'Mutation': schema.Mutation,
+		'Subscription':schema.Subscription,
 		}
 
 	def resolve(self, ctx, method, args, rets):

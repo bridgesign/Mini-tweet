@@ -1,6 +1,6 @@
 import os
 
-HEADER_SIZE = 1024
+HEADER_SIZE = 4096
 
 code_msg = {
 	200: 'OK',
