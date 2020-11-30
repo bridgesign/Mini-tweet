@@ -3,6 +3,8 @@ Mini-twitter project for Computer Networks (CS 433) course at IITGN.
 
 As being a networks project, the development focus is more on the modularity of the server, the API framework and scalability of the implementation. For this reason, the complete project is distributed into two major parts: The server and the API module.
 
+To start the server run `python main.py`. It will start the server at http://localhost:8080
+
 ## Requirements
 
 1. Python 3
@@ -41,4 +43,20 @@ The views can be used to process an *httprequest* and return a *httpresponse* ob
 
 ## API
 
-The API module is largely inspired from GrahpQL. Though the views module can be directly used to create a REST API, the API module provides a parser that can be used for easily developments of API calls.
+The API module is largely inspired from GraphQL. Though the views module can be directly used to create a REST API, the API module provides a parser that can be used for easily developments of API calls. The `shcema.py` file can be used for defining the various methods. In the parser, it is possible to extend the number of base schema types.
+
+Following the philosophy of GraphQL, the same endpoint can be used for all the queries. Moreover, the API call is oblivious to the number of different connections it is maintaing to the database or a number of databases. The developer is free to use a number of databases at a time which may not be of the framework.
+
+## Structure
+
+The following shows the layer structure of the current implementation:
+
+|Layer | Module |
+|------|--------|
+|1| Server   |
+|2| Handler  |
+|3| Views    |
+|4| API      |
+|5| Database |
+
+In terms of file structure, the https package contains the server module and the api package the API module. Further documentation can be found for each package in its folder. The documentation folder contains the details of Twitter Specific implementation and the Mininet Testing.
