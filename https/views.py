@@ -6,7 +6,11 @@ import json
 from api.parse import parser
 from . import token
 
-p = parser()
+import psycopg2
+conn = psycopg2.connect("dbname=postgres user=postgres password=19954550")
+cur = conn.cursor()
+
+p = parser({'conn':conn, 'cur':cur})
 
 def static_handler(request):
 	split = request.headers['url'].split('/')

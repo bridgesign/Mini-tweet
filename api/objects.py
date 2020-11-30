@@ -1,9 +1,10 @@
 class User:
-	def __init__(self, username):
-		self.user = username
+	def __init__(self, user_id):
+		self.user_id = user_id
 
-	def username(self):
-		return self.user
+	def uid(self):
+		return self.user_id
+
 
 class Tweet:
 	def __init__(self, user, hashtags, post):
