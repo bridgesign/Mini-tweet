@@ -28,3 +28,7 @@ class Query:
 class Mutation:
 	def __init__(self, obj=None):
 		self.obj = obj
+
+class Subscription:
+	def __init__(self, obj=None):
+		self.obj = obj
