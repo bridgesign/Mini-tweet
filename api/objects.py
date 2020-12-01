@@ -24,7 +24,7 @@ class User:
 	def user_name(self):
 		if self.username == None:
 			fetch_data(self.cur, self, "users", "id", self.id)
-		return self.user_name
+		return self.username
 
 
 class Tweet:
