@@ -125,7 +125,7 @@ class Mutation:
 		conn.commit()	 
 		return True
 
-	def follow(self, ctx, other_uid):
+	def follow(self, ctx, username):
 		'''
 		Twitter follow
 		'''
@@ -133,15 +133,17 @@ class Mutation:
 		user_id = ctx['uid']
 		
 		try:
+			cur.execute("SELECT id FROM users WHERE username=%s", (username,))
+			other_uid = cur.fetchone()[0]
 			cur.execute("INSERT INTO followers (user_id, follower_id) VALUES (%s, %s);", (user_id, other_uid))
 		except:
 			conn.rollback()
 			return Error("Error in following user")
 	
-		conn.commit()	 
-		return token.create_token({'uid':user_id, 'recent_follower_id':other_uid}, 3600)
+		conn.commit()
+		return True
 	
-	def block(self, ctx, tobe_blocked_id):
+	def block(self, ctx, username):
 		'''
 		Twitter Blocking users
 		'''
@@ -149,12 +151,14 @@ class Mutation:
 		user_id = ctx['uid']
 
 		try:
+			cur.execute("SELECT id FROM users WHERE username=%s", (username,))
+			tobe_blocked_id = cur.fetchone()[0]
 			cur.execute("DELETE FROM followers WHERE user_id=%s AND follower_id=%s", (user_id, tobe_blocked_id))
 		except:
 			conn.rollback()
 			return Error("Error in blocking user")
 		conn.commit()	 
-		return token.create_token({'uid':user_id}, 3600)
+		return True
 				
 	def retweet(self, ctx, tweet_id, retweet_content:str, tags:list, mentions_list:list):
 		'''
@@ -163,16 +167,16 @@ class Mutation:
 		'''
 		conn, cur = self.obj['conn'], self.obj['cur']
 		user_id = ctx['uid']
-		retweet_id = self.create_tweet(ctx, retweet_content, tags, mentions_list, FLAG_retweet=True)
+		retweet_obj = self.create_tweet(ctx, retweet_content, tags, mentions_list, FLAG_retweet=True)
 
 		try:
-			cur.execute("INSERT INTO retweets (tweet_id, retweet_id) VALUES (%s, %s);", (tweet_id, retweet_id))
+			cur.execute("INSERT INTO retweets (tweet_id, retweet_id) VALUES (%s, %s);", (tweet_id, retweet_obj.tweet_id()))
 		except:
 			conn.rollback()
 			return Error("Error in retweeting")				
 		
 		conn.commit()	 
-		return token.create_token({'uid':user_id, 'recent_tweet_id':retweet_id}, 3600)
+		return retweet_obj
 
 
 class Subscription:
