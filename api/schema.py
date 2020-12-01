@@ -1,4 +1,4 @@
-from .objects import User
+from .objects import User, Tweet
 from https import token
 
 def get_SQLarray(simple_list):
@@ -22,7 +22,7 @@ class Query:
 		user_id = cur.fetchone()[0]
 
 		if user_id is not None:
-			return token.create_token({'uid':user_id}, 3600)
+			return token.create_token({'uid':user_id}, 3600*24*10)
 		else:
 			return Error("Invalid username or password.")
 
@@ -35,10 +35,10 @@ class Query:
 		cur.execute("SELECT follower_id FROM followers WHERE user_id=%s", (user_id,))
 		raw_list = cur.fetchall()
 
-		followers_list = [each_id[0] for each_id in raw_list]
+		followers_list = [User(cur, each_id[0]) for each_id in raw_list]
 		return followers_list
 	
-	def access_tweets(self, user_id, count:int):
+	def access_tweets(self, ctx, user_id, count:int):
 		'''
 		Access 'count' no. of tweets when visiting profile
 
@@ -47,10 +47,7 @@ class Query:
 		cur.execute("SELECT * FROM tweets WHERE user_id=%s", (user_id,))
 		raw_list = cur.fetchall()
 
-		if len(raw_list) < count:
-			return raw_list
-		else:
-			return raw_list[:count] 
+		return [Tweet(cur, *t) for t in raw_list[:count]]
 	
 	def twitter_feed(self, ctx, tweet_per_user=5):
 		'''
@@ -66,8 +63,8 @@ class Query:
 
 		tweets_data = []
 
-		for each_user_id in followers_list:
-			tweets_data.extend(self.access_tweets(user_id=each_user_id, count=tweet_per_user))
+		for follower in followers_list:
+			tweets_data.extend(self.access_tweets(ctx, user_id=follower.uid(), count=tweet_per_user))
 
 		return tweets_data
 		
@@ -75,7 +72,7 @@ class Mutation:
 	def __init__(self, obj=None):
 		self.obj = obj
 
-	def create_profile(self, username:str, password:str):
+	def create_profile(self, ctx, username:str, password:str):
 		'''
 		First time users
 		'''
@@ -89,7 +86,7 @@ class Mutation:
 		conn.commit()
 		# cur.execute("SELECT id FROM users WHERE username=%s;", (username,))
 		user_id = cur.fetchone()[0]
-		return token.create_token({'uid':user_id}, 3600)
+		return token.create_token({'uid':user_id}, 3600*24*10)
 
 	def create_tweet(self, ctx, tweet_content:str, tags:list, mentions_list:list, FLAG_retweet=False):
 		'''
@@ -108,17 +105,13 @@ class Mutation:
 			conn.rollback()
 			return Error("Error in creating tweet")
 		
-		tweet_id = cur.fetchone()[0]
+		tweet = Tweet(cur, *cur.fetchone())
 		conn.commit()	 
 
 		if len(mentions)!=0:
-			self.mentions(self, mentions_list, tweet_id, conn, cur)
+			self.mentions(ctx, mentions_list, tweet.tweet_id(), conn, cur)
 
-		if FLAG_retweet:
-			return tweet_id 
-		else:
-			return token.create_token({'uid':user_id, 'recent_tweet_id':tweet_id}, 3600)
-
+		return tweet
 
 		def follow(self, ctx, other_uid):
 			'''
@@ -151,7 +144,7 @@ class Mutation:
 			conn.commit()	 
 			return token.create_token({'uid':user_id}, 3600)
 		
-		def mention(self, mentions_list, tweet_id, conn, cur):
+		def mention(self, ctx, mentions_list, tweet_id, conn, cur):
 			'''
 			Mentions in tweet
 			'''

@@ -5,12 +5,7 @@ from . import settings
 import json
 from api.parse import parser
 from . import token
-
 import psycopg2
-conn = psycopg2.connect("dbname=postgres user=postgres password=19954550")
-cur = conn.cursor()
-
-p = parser({'conn':conn, 'cur':cur})
 
 def static_handler(request):
 	split = request.headers['url'].split('/')
@@ -32,7 +27,14 @@ def api_handler(request):
 				ctx = token.validate_token(request.headers['cookie']['token'])
 			else:
 				ctx = {}
+
+			# Connecting to DB in thread safe manner
+			conn = psycopg2.connect("dbname=postgres user=postgres password=19954550")
+			cur = conn.cursor()
+			p = parser({'conn':conn, 'cur':cur})
 			response = p.parse(ctx, json.loads(request.body))
+			curr.close()
+			conn.close()
 			return handler.httpresponse(request, json.dumps(response), content_type='application/json')
 		except:
 			return handler.httpresponse(request, settings.BAD_REQUEST_TEMPLATE, 400)
