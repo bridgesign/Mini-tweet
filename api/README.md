@@ -22,4 +22,33 @@ If there is an error, the reply will be of the form:
 
 ## Parser
 
-The parser is responsible for calling the proper schema method from the request data. Moreover, the parser can handle nested request. It is possible that one needs to get data about your friends or followers. But you only need the names of the frineds, which are also users. In such a case,
+The parser is responsible for calling the proper schema method from the request data. Moreover, the parser can handle nested request. It is possible that one needs to get data about your friends or followers. But you only need the names of the followers, which are also users. In such a case, it is possible to construct a query that will only return the names. This does not require any kind of extra work on the server side. The server is capable of returning all the data using a single method yet the parser can enforce a query structure to allow client to query only the required data.
+
+## Example Queries
+
+```{"Mutation":{"create_profile":({"username":username, "password":pass}, "token")}}```
+
+SignsUp the user and returns the token
+
+```
+{"Mutation":{
+	"create_tweet":(
+		{"tweet_content":"Hi! I am Banri", "tags":[], "mentions_list":[]}, ('tweet_post',{'user':'user_name'}
+		))
+	}
+}
+```
+
+This will return the following response
+
+```{"data":{"tweet_post":"Hi! I am Banri", "user":{"user_name":Tada}}}```
+
+As such, the information requested by the client is only the posted content and the username of the one who has posted.
+
+```{"Mutation":{"follow":({"username":"Yana Koko"}, "status")}}```
+
+Here the client only requires to know the status of the request.
+
+```{"Query":{"twitter_feed":({}, (['tweets', ('tweet_post',{'user':'user_name'})],))}}```
+
+Here, the feed will return a list of tweets. This is indicated by putting a list inside the return arguments. The client is requesting for the tweet content given by `tweet_post` and the username of the user who posted it. The nested dictionary directs the parser tp understand that the object given by a tweet on user call is *User object* and hence it needs to further query data to get the username.
