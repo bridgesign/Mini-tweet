@@ -11,8 +11,11 @@ class parser:
 		'Subscription':schema.Subscription,
 		}
 
-	def resolve(self, ctx, method, args, rets):
-		obj = method(ctx ,**args)
+	def resolve(self, ctx, method, args, rets, obj=True):
+		if obj:
+			obj = method
+		else:
+			obj = method(ctx=ctx ,**args)
 		response = {}
 		if isinstance(obj, (dict, str, list)):
 			if isinstance(rets, str):
@@ -29,9 +32,9 @@ class parser:
 				if isinstance(response[r], schema.Error):
 					return response[r]
 			elif isinstance(r,dict):
-				k, v = r.items()
+				[(k, v)] = r.items()
 				tobj = getattr(obj, k)()
-				response[k] = self.resolve(ctx, tobj, v[0], v[1])
+				response[k] = self.resolve(ctx, tobj, {}, v)
 				if isinstance(response[k], schema.Error):
 					return response[k]
 			else:
@@ -52,7 +55,7 @@ class parser:
 		args, rets = query[schem][method]
 		schem = self.schema[schem](self.obj)
 		method = getattr(schem, method)
-		r = self.resolve(ctx, method, args, rets)
+		r = self.resolve(ctx, method, args, rets, obj=False)
 		if isinstance(r, schema.Error):
 			response = r
 		else:

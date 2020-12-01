@@ -49,6 +49,7 @@ class Tweet:
 	def user(self):
 		if self.userobj==False:
 			fetch_data(self.cur, self, "tweets", "id", self.id)
+			self.userobj = User(self.cur, self.user_id)
 		return self.userobj
 
 	def tweet_post(self):
