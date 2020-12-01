@@ -105,7 +105,7 @@ class Mutation:
 			return Error("Error in creating tweet")
 		
 		tweet = Tweet(cur, cur.fetchone()[0])
-		conn.commit()	 
+		conn.commit()
 
 		if len(mentions_list)!=0:
 			self.mention(ctx, mentions_list, tweet.tweet_id(), conn, cur)

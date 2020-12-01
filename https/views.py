@@ -33,7 +33,7 @@ def api_handler(request):
 			cur = conn.cursor()
 			p = parser({'conn':conn, 'cur':cur})
 			response = p.parse(ctx, json.loads(request.body))
-			curr.close()
+			cur.close()
 			conn.close()
 			return handler.httpresponse(request, json.dumps(response), content_type='application/json')
 		except:

@@ -17,7 +17,7 @@ class parser:
 		else:
 			obj = method(ctx=ctx ,**args)
 		response = {}
-		if isinstance(obj, (dict, str, list)):
+		if isinstance(obj, (dict, str)):
 			if isinstance(rets, str):
 				return {rets:obj}
 			else:
@@ -39,9 +39,8 @@ class parser:
 					return response[k]
 			else:
 				k, trets = r
-				tobj_ls = getattr(obj, k)()
 				resps = []
-				for tobj in tobj_ls:
+				for tobj in obj:
 					r = self.resolve(ctx, tobj, {}, trets)
 					if isinstance(r, schema.Error):
 						return r
