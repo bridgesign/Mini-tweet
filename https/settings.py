@@ -13,6 +13,12 @@ NOT_FOUND_TEMPLATE = "<html><body><h1>Not Found</h1></body></html>"
 
 BAD_REQUEST_TEMPLATE = "<html><body><h1>Bad Request</h1></body></html>"
 
+DBSETTINGS = {
+	'dbname':os.environ['DB'],
+	'user':os.environ['USER'],
+	'password':os.environ['PASS'],
+	'host':os.environ['HOST'],
+}
 
 secret = 'aljfhkfc234sddfb'
 

@@ -121,7 +121,7 @@ class Mutation:
 			
 			try:
 				cur.execute("INSERT INTO followers (user_id, follower_id) VALUES (%s, %s);", (user_id, other_uid))
-			except 
+			except:
 				conn.rollback()
 				return Error("Error in following user")
 		
@@ -163,7 +163,7 @@ class Mutation:
 			'''
 			conn, cur = self.obj['conn'], self.obj['cur']
 			user_id = ctx['uid']
-			retweet_id = self.create_tweet(ctx, retweet_content:str, tags:list, mentions_list:list, FLAG_retweet=True)
+			retweet_id = self.create_tweet(ctx, retweet_content, tags, mentions_list, FLAG_retweet=True)
 
 			try:
 				cur.execute("INSERT INTO retweets (tweet_id, retweet_id) VALUES (%s, %s);", (tweet_id, retweet_id))

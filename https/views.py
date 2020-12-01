@@ -29,7 +29,7 @@ def api_handler(request):
 				ctx = {}
 
 			# Connecting to DB in thread safe manner
-			conn = psycopg2.connect("dbname=postgres user=postgres password=19954550")
+			conn = psycopg2.connect(**settings.DBSETTINGS)
 			cur = conn.cursor()
 			p = parser({'conn':conn, 'cur':cur})
 			response = p.parse(ctx, json.loads(request.body))
