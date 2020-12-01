@@ -22,6 +22,8 @@ def static_handler(request):
 
 def api_handler(request):
 	if request.headers['method']=='POST':
+		conn = psycopg2.connect(**settings.DBSETTINGS)
+		cur = conn.cursor()
 		try:
 			if 'token' in request.headers['cookie']:
 				ctx = token.validate_token(request.headers['cookie']['token'])
@@ -29,15 +31,14 @@ def api_handler(request):
 				ctx = {}
 
 			# Connecting to DB in thread safe manner
-			conn = psycopg2.connect(**settings.DBSETTINGS)
-			cur = conn.cursor()
 			p = parser({'conn':conn, 'cur':cur})
 			response = p.parse(ctx, json.loads(request.body))
-			cur.close()
-			conn.close()
-			return handler.httpresponse(request, json.dumps(response), content_type='application/json')
+			h = handler.httpresponse(request, json.dumps(response), content_type='application/json')
 		except:
-			return handler.httpresponse(request, settings.BAD_REQUEST_TEMPLATE, 400)
+			h = handler.httpresponse(request, settings.BAD_REQUEST_TEMPLATE, 400)
+		cur.close()
+		conn.close()
+		return h
 	else:
 		return handler.httpresponse(request, settings.BAD_REQUEST_TEMPLATE, 400)
 

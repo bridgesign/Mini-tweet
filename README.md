@@ -3,7 +3,7 @@ Mini-twitter project for Computer Networks (CS 433) course at IITGN.
 
 As being a networks project, the development focus is more on the modularity of the server, the API framework and scalability of the implementation. For this reason, the complete project is distributed into two major parts: The server and the API module.
 
-To start the server run `python main.py`. It will start the server at http://localhost:8080
+To start the server run `python3 main.py`. It will start the server at http://localhost:8080
 
 ## Requirements
 
@@ -11,7 +11,7 @@ To start the server run `python main.py`. It will start the server at http://loc
 2. Pyscopg2
 3. Requests
 4. PostgreSQL
-5. Mininet
+5. Mininet (Python 2 required for this)
 
 Only python3 is a hard requirement. Psycopg2 and PostgreSQL is required only for the implementation of twitter-like functionalities. Similarly, requests library and Mininet are required for client side testing purpose. Otherwise, the server and API implementation are independent of these requirements. 
 
