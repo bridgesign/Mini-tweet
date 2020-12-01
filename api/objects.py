@@ -29,13 +29,13 @@ class User:
 
 
 class Tweet:
-	def __init__(self, cur, tid, user_id=None, post=None, favourites=None, replies=None, retweets=None, mentions=None, tags=None, created=None, updated=None):
+	def __init__(self, cur, tid, user_id=None, post=None, favorites=None, replies=None, retweets=None, mentions=None, tags=None, created=None, updated=None):
 		self.cur = cur
 		self.id = tid
 		self.user_id = user_id
 		self.userobj = False if user_id==None else User(cur, user_id)
 		self.post = post
-		self.favourites = favourites
+		self.favorites = favorites
 		self.replies = replies
 		self.retweets = retweets
 		self.tags = tags
