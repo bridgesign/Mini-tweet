@@ -84,7 +84,6 @@ class Mutation:
 			return Error("Username not unique")
 
 		conn.commit()
-		# cur.execute("SELECT id FROM users WHERE username=%s;", (username,))
 		user_id = cur.fetchone()[0]
 		return token.create_token({'uid':user_id}, 3600*24*10)
 
