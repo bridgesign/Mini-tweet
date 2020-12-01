@@ -21,6 +21,8 @@ class parser:
 				return obj
 		elif isinstance(obj, schema.Error):
 			return obj.repr()
+		elif not isinstance(rets, (tuple, list)):
+			rets = (rets,)
 		for r in rets:
 			if isinstance(r, str):
 				response[r] = getattr(obj, r)()

@@ -107,72 +107,72 @@ class Mutation:
 		tweet = Tweet(cur, cur.fetchone()[0])
 		conn.commit()	 
 
-		if len(mentions)!=0:
-			self.mentions(ctx, mentions_list, tweet.tweet_id(), conn, cur)
+		if len(mentions_list)!=0:
+			self.mention(ctx, mentions_list, tweet.tweet_id(), conn, cur)
 
 		return tweet
 
-		def follow(self, ctx, other_uid):
-			'''
-			Twitter follow
-			'''
-			conn, cur = self.obj['conn'], self.obj['cur']
-			user_id = ctx['uid']
-			
-			try:
-				cur.execute("INSERT INTO followers (user_id, follower_id) VALUES (%s, %s);", (user_id, other_uid))
-			except:
-				conn.rollback()
-				return Error("Error in following user")
-		
-			conn.commit()	 
-			return token.create_token({'uid':user_id, 'recent_follower_id':other_uid}, 3600)
-		
-		def block(self, ctx, tobe_blocked_id):
-			'''
-			Twitter Blocking users
-			'''
-			conn, cur = self.obj['conn'], self.obj['cur']
-			user_id = ctx['uid']
+	def mention(self, ctx, mentions_list, tweet_id, conn, cur):
+		'''
+		Mentions in tweet
+		'''
+		try:
+			for each_id in mentions_list:
+				cur.execute("INSERT INTO mentions (user_id, tweet_id) VALUES (%s, %s);", (each_id, tweet_id))
+		except:
+			conn.rollback()
+			return Error("Error in blocking user")
+		conn.commit()	 
+		return True
 
-			try:
-				cur.execute("DELETE FROM followers WHERE user_id=%s AND follower_id=%s", (user_id, tobe_blocked_id))
-			except:
-				conn.rollback()
-				return Error("Error in blocking user")
-			conn.commit()	 
-			return token.create_token({'uid':user_id}, 3600)
+	def follow(self, ctx, other_uid):
+		'''
+		Twitter follow
+		'''
+		conn, cur = self.obj['conn'], self.obj['cur']
+		user_id = ctx['uid']
 		
-		def mention(self, ctx, mentions_list, tweet_id, conn, cur):
-			'''
-			Mentions in tweet
-			'''
-			try:
-				for each_id in mentions_list:
-					cur.execute("INSERT INTO mentions (user_id, tweet_id) VALUES (%s, %s);", (each_id, tweet_id))
-			except:
-				conn.rollback()
-				return Error("Error in blocking user")
-			conn.commit()	 
-			return True
-		
-		def retweet(self, ctx, tweet_id, retweet_content:str, tags:list, mentions_list:list):
-			'''
-			Retweets
-				: A normal tweet + retweet data
-			'''
-			conn, cur = self.obj['conn'], self.obj['cur']
-			user_id = ctx['uid']
-			retweet_id = self.create_tweet(ctx, retweet_content, tags, mentions_list, FLAG_retweet=True)
+		try:
+			cur.execute("INSERT INTO followers (user_id, follower_id) VALUES (%s, %s);", (user_id, other_uid))
+		except:
+			conn.rollback()
+			return Error("Error in following user")
+	
+		conn.commit()	 
+		return token.create_token({'uid':user_id, 'recent_follower_id':other_uid}, 3600)
+	
+	def block(self, ctx, tobe_blocked_id):
+		'''
+		Twitter Blocking users
+		'''
+		conn, cur = self.obj['conn'], self.obj['cur']
+		user_id = ctx['uid']
 
-			try:
-				cur.execute("INSERT INTO retweets (tweet_id, retweet_id) VALUES (%s, %s);", (tweet_id, retweet_id))
-			except:
-				conn.rollback()
-				return Error("Error in retweeting")				
-			
-			conn.commit()	 
-			return token.create_token({'uid':user_id, 'recent_tweet_id':retweet_id}, 3600)
+		try:
+			cur.execute("DELETE FROM followers WHERE user_id=%s AND follower_id=%s", (user_id, tobe_blocked_id))
+		except:
+			conn.rollback()
+			return Error("Error in blocking user")
+		conn.commit()	 
+		return token.create_token({'uid':user_id}, 3600)
+				
+	def retweet(self, ctx, tweet_id, retweet_content:str, tags:list, mentions_list:list):
+		'''
+		Retweets
+			: A normal tweet + retweet data
+		'''
+		conn, cur = self.obj['conn'], self.obj['cur']
+		user_id = ctx['uid']
+		retweet_id = self.create_tweet(ctx, retweet_content, tags, mentions_list, FLAG_retweet=True)
+
+		try:
+			cur.execute("INSERT INTO retweets (tweet_id, retweet_id) VALUES (%s, %s);", (tweet_id, retweet_id))
+		except:
+			conn.rollback()
+			return Error("Error in retweeting")				
+		
+		conn.commit()	 
+		return token.create_token({'uid':user_id, 'recent_tweet_id':retweet_id}, 3600)
 
 
 class Subscription:

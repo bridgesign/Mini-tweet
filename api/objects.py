@@ -1,6 +1,7 @@
 def fetch_data(cur,obj, table, key, value):
-	attrs = [k for k,v in vars(obj) if v==None]
-	cur.execute("SELECT %s FROM %s WHERE %s=%s", (' '.join(attrs), table, key, value))
+	attrs = [k for k,v in vars(obj).items() if v==None]
+	query = "SELECT {} FROM {} WHERE {}=%s".format(','.join(attrs),table, key)
+	cur.execute(query, (value,))
 	data = zip(attrs, cur.fetchone())
 	for k,v in data:
 		setattr(obj, k, v)
@@ -10,7 +11,7 @@ class User:
 		self.id = user_id
 		self.cur = cur
 		self.username = None
-		self.favourites = None
+		self.favorites = None
 		self.followers = None
 		self.following = None
 		self.mentions = None
@@ -43,7 +44,7 @@ class Tweet:
 		self.updated = updated
 
 	def tweet_id(self):
-		return self.tid
+		return self.id
 
 	def user(self):
 		if self.userobj==False:
