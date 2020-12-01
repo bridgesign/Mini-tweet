@@ -105,7 +105,7 @@ class Mutation:
 			conn.rollback()
 			return Error("Error in creating tweet")
 		
-		tweet = Tweet(cur, *cur.fetchone())
+		tweet = Tweet(cur, cur.fetchone()[0])
 		conn.commit()	 
 
 		if len(mentions)!=0:
