@@ -17,7 +17,7 @@ class Query:
 
 	def login(self, ctx, username:str, password:str):
 		conn, cur = self.obj['conn'], self.obj['cur']
-		cur.execute("SELECT id FROM users WHERE username=%s AND passw=%s", (usr, passw))
+		cur.execute("SELECT id FROM users WHERE username=%s AND passw=%s", (username, password))
 		
 		user_id = cur.fetchone()[0]
 
