@@ -1,4 +1,6 @@
 # Mini-tweet
+[Demo Video](https://drive.google.com/file/d/1C3gVeFz8uUYy6ZR1keTnxTZ2CW59v46d/view?usp=sharing)
+
 Mini-twitter project for Computer Networks (CS 433) course at IITGN.
 
 As being a networks project, the development focus is more on the modularity of the server, the API framework and scalability of the implementation. For this reason, the complete project is distributed into two major parts: The server and the API module.
