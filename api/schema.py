@@ -93,8 +93,8 @@ class Mutation:
 		conn, cur = self.obj['conn'], self.obj['cur']
 
 
-		hashtag_re = re.compile("(?:^|\\s)[#]{1}(\\w+)", re.UNICODE)
-		mention_re = re.compile("(?:^|\\s)[@]{1}([^\\s#<>[\\]|{}]+)", re.UNICODE)
+		mention_re = re.compile("(?:^|\s)[@]{1}([^\s#<>[\\]|{}]+)", re.UNICODE)
+		hashtag_re = re.compile("(?:^|\s)[#]{1}(\w+)", re.UNICODE)
 
 		tags = hashtag_re.findall(tweet_content)
 		tags = get_SQLarray(tags)
