@@ -166,13 +166,23 @@ class Mutation:
 		conn.commit()	 
 		return True
 				
-	def retweet(self, ctx, tweet_id, retweet_content:str, tags:list, mentions_list:list):
+	def retweet(self, ctx, tweet_id, retweet_content:str):
 		'''
 		Retweets
 			: A normal tweet + retweet data
 		'''
 		conn, cur = self.obj['conn'], self.obj['cur']
 		user_id = ctx['uid']
+
+		mention_re = re.compile("(?:^|\s)[@]{1}([^\s#<>[\\]|{}]+)", re.UNICODE)
+		hashtag_re = re.compile("(?:^|\s)[#]{1}(\w+)", re.UNICODE)
+
+		tags = hashtag_re.findall(retweet_content)
+		tags = get_SQLarray(tags)
+
+		mentions_list = mention_re.findall(retweet_content)		
+		mentions_list = get_SQLarray(mentions_list)
+
 		retweet_obj = self.create_tweet(ctx, retweet_content, tags, mentions_list, FLAG_retweet=True)
 
 		try:

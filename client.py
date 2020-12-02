@@ -23,7 +23,7 @@ cookie = json.loads(x.text)['data']
 print("{} Logged In".format(username))
 
 # Tweeting Entry
-q = {"Mutation":{"create_tweet":({"tweet_content":"Hi! I am {}".format(username), "tags":[], "mentions_list":[]}, ('tweet_post',{'user':'user_name'}))}}
+q = {"Mutation":{"create_tweet":({"tweet_content":"Hi! I am {}".format(username)}, ('tweet_post',{'user':'user_name'}))}}
 x = requests.post(url, json = q, cookies=cookie)
 data = json.loads(x.text)['data']
 print("{} Tweeted: {}".format(username, data['tweet_post']))

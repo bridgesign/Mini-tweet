@@ -3,6 +3,7 @@ from mininet.topo import Topo
 from mininet.link import TCLink
 from mininet.util import pmonitor
 from mininet.log import setLogLevel, info
+from mininet.cli import CLI
 
 import os
 from time import sleep
@@ -92,6 +93,8 @@ def main():
 	db_server.popen("sudo -u postgres /usr/lib/postgresql/10/bin/postgres -p 5432 -D /etc/postgresql/10/main2")
 
 	sleep(10)
+
+	CLI(net)
 
 	servers = net.topo.return_servers()
 	clients = net.topo.return_clients()
