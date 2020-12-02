@@ -60,3 +60,7 @@ The following shows the layer structure of the current implementation:
 |5| Database |
 
 In terms of file structure, the https package contains the server module and the api package the API module. Further documentation can be found for each package in its folder. The documentation folder contains the details of Twitter Specific implementation and the Mininet Testing.
+
+## Notes
+
+The DB name used throughout is *twitter*. The credentials used by the server is taken from environment variables: HOST, DB, USER and PASS. These are hard-coded in `experiment.py` while under normal run it is needs to be set by the user.
