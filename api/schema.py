@@ -1,5 +1,6 @@
 from .objects import User, Tweet
 from https import token
+import re
 
 def get_SQLarray(simple_list):
 	return '{'  +  ','.join(simple_list)  +  '}' 
@@ -41,7 +42,6 @@ class Query:
 	def access_tweets(self, ctx, user_id, count:int):
 		'''
 		Access 'count' no. of tweets when visiting profile
-
 		'''
 		conn, cur = self.obj['conn'], self.obj['cur']
 		cur.execute("SELECT * FROM tweets WHERE user_id=%s", (user_id,))
@@ -53,7 +53,6 @@ class Query:
 		'''
 		Personalized Twitter feed
 		'''
-		
 		if 'uid' not in ctx:
 			return Error("Not Logged In")
 
@@ -87,13 +86,20 @@ class Mutation:
 		user_id = cur.fetchone()[0]
 		return token.create_token({'uid':user_id}, 3600*24*10)
 
-	def create_tweet(self, ctx, tweet_content:str, tags:list, mentions_list:list, FLAG_retweet=False):
+	def create_tweet(self, ctx, tweet_content:str, FLAG_retweet=False):
 		'''
 		Tweet Entry
 		'''
 		conn, cur = self.obj['conn'], self.obj['cur']
 
+
+		hashtag_re = re.compile("(?:^|\\s)[#]{1}(\\w+)", re.UNICODE)
+		mention_re = re.compile("(?:^|\\s)[@]{1}([^\\s#<>[\\]|{}]+)", re.UNICODE)
+
+		tags = hashtag_re.findall(tweet_content)
 		tags = get_SQLarray(tags)
+
+		mentions_list = mention_re.findall(tweet_content)		
 		mentions_list = get_SQLarray(mentions_list)
 
 		user_id = ctx['uid']
