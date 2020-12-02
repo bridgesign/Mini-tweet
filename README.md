@@ -1,5 +1,5 @@
 # Mini-tweet
-[Demo Video](https://drive.google.com/file/d/1C3gVeFz8uUYy6ZR1keTnxTZ2CW59v46d/view?usp=sharing)
+## :pushpin: Demo: [Video](https://drive.google.com/file/d/1C3gVeFz8uUYy6ZR1keTnxTZ2CW59v46d/view?usp=sharing)
 
 Mini-twitter project for Computer Networks (CS 433) course at IITGN.
 
